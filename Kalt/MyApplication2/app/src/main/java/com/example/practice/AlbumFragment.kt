@@ -1,10 +1,12 @@
 package com.example.practice
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 
@@ -17,6 +19,7 @@ class AlbumFragment : Fragment() {
     private val information = arrayListOf("수록곡", "상세정보","영상")
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val gson : Gson = Gson()
+    private var isLiked : Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,16 +34,23 @@ class AlbumFragment : Fragment() {
 
         val albumJson = arguments?.getString("album")
         val album = gson.fromJson(albumJson,Album::class.java)
-        setinit(album)
+        isLiked = isLikedAlbum(album.id)
+        if (albumJson != null) {
+            val album = gson.fromJson(albumJson, Album::class.java)
+            isLiked = isLikedAlbum(album.id)
+            setinit(album)
+            setOnClickListeners(album)
 
-        val albumVpAdapter = AlbumVpAdapter(this)
-        binding.albumContentVp.adapter = albumVpAdapter
-        TabLayoutMediator(binding.albumContentTb,binding.albumContentVp){
-            tab,position ->
-            tab.text = information[position]
-        }.attach()
-        sharedViewModel.imageResource.observe(viewLifecycleOwner) { resourceId ->
-            binding.albumAlbumIv.setImageResource(resourceId)
+            val albumVpAdapter = AlbumVpAdapter(this)
+            binding.albumContentVp.adapter = albumVpAdapter
+            TabLayoutMediator(binding.albumContentTb, binding.albumContentVp) { tab, position ->
+                tab.text = information[position]
+            }.attach()
+            sharedViewModel.imageResource.observe(viewLifecycleOwner) { resourceId ->
+                binding.albumAlbumIv.setImageResource(resourceId)
+            }
+        } else {
+            Log.e("AlbumFragment", "Album data is null")
         }
 
 
@@ -50,6 +60,53 @@ class AlbumFragment : Fragment() {
         binding.albumMusicTitleTv.text = album.title
         binding.albumSingerNameTv.text = album.singer
         binding.albumAlbumIv.setImageResource(album.coverimg!!)
+        if(isLiked){
+            binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
+        }else{
+            binding.albumMoreIv.setImageResource(R.drawable.ic_my_like_off)
+        }
+    }
+    private fun getJwt():Int{
+        val spf = activity?.getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
+        return spf!!.getInt("jwt",0) ?:0
+    }
+    private fun likeAlbum(userId : Int, albumId : Int){
+        val songDB = SongDatabase.getInstance(requireContext())!!
+        val like = Like(userId, albumId)
+
+        songDB.albumDao().likeAlbum(like)
+    }
+    private fun isLikedAlbum(albumId: Int) : Boolean{
+        val songDB = SongDatabase.getInstance(requireContext())!!
+        if (songDB != null) {
+            val userId = getJwt()
+            val likeId: Int? = songDB.albumDao().islikeAlbum(userId, albumId)
+            return likeId != null
+        } else {
+            Log.e("AlbumFragment", "SongDatabase instance is null")
+            return false
+        }
+    }
+    private fun disLikedAlbum(albumId: Int) {
+        val songDB = SongDatabase.getInstance(requireContext())!!
+        if (songDB != null) {
+            val userId = getJwt()
+            songDB.albumDao().dislikeAlbum(userId, albumId)
+        } else {
+            Log.e("AlbumFragment", "SongDatabase instance is null")
+        }
+    }
+    private fun setOnClickListeners(album: Album){
+        val userId = getJwt()
+        binding.albumLikeIv.setOnClickListener {
+            if(isLiked){
+                binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
+                disLikedAlbum(album.id)
+            }else{
+                binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
+                likeAlbum(userId, album.id )
+            }
+        }
     }
 
 }

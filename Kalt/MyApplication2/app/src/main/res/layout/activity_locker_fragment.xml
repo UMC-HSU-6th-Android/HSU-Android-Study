@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -18,6 +19,7 @@
         android:layout_marginStart="40dp"
         />
     <TextView
+        android:id="@+id/login_text_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,21 +35,22 @@
         android:id="@+id/upper_linearlayout_tiv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_text_tv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/locker_select_all_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="172dp"
+            android:layout_marginTop="72dp"
             android:layout_marginStart="5dp"
             android:src="@drawable/baseline_check_24"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="72dp"
             android:layout_marginStart="10dp"
             android:textStyle="bold"
             android:textSize="17dp"
@@ -55,7 +58,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="172dp"
+            android:layout_marginTop="72dp"
             android:layout_marginStart="20dp"
             android:src="@drawable/baseline_check_24"/>
         <TextView
@@ -63,14 +66,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:textStyle="bold"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="72dp"
             android:textSize="17dp"
             android:text="전체듣기"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="120dp"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="72dp"
             android:textSize="17dp"
             android:textStyle="bold"
             android:text="편집"/>
@@ -88,6 +91,13 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/locker_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/upper_linearlayout_tiv"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

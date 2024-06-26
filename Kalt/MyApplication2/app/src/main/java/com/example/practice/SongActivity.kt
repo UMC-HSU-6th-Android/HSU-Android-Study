@@ -60,9 +60,7 @@ class SongActivity : AppCompatActivity() {
         songs[nowPos].second = ((binding.songprogressSB.progress *songs[nowPos].playTime)/100)/1000
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)// 앱이 종료되도 데이터를 다시 사용할 수 있다.
         val editor = sharedPreferences.edit() //에디터
-
         editor.putInt("songId",songs[nowPos].id)
-
         editor.apply() //꼭 해줘야 한다.
     }
     override fun onDestroy() {

@@ -11,9 +11,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.practice.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() ,OnButtonClickListener{
     private lateinit var binding: ActivityMainBinding
     private var songs = arrayListOf<Song>()
+
     //private var albums = arrayListOf<Album>()
     private var nowPos = 0
     private var mediaPlayer: MediaPlayer? = null
@@ -29,10 +30,17 @@ class MainActivity : AppCompatActivity() {
 
         clearAndInputDummySongs()
         loadSongsFromDatabase()
-       // inputDummyAlbums()
+        inputDummyAlbums()
         initClickListeners()
         initBottomNavigation()
         loadCurrentSong()
+    }
+    override fun homefragementbuttonclicklister(songs: List<Song>) {
+        if (songs.isNotEmpty()) {
+            val song = songs[1] // 노래 리스트 중 첫 번째 노래 선택
+            binding.mainNext.performClick()
+            Toast.makeText(this, "Playing song: ${song.title}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onStart() {
@@ -160,13 +168,15 @@ class MainActivity : AppCompatActivity() {
                 false
             )
         )
+        val _songs = songDB.songDao().getSongs()
+        Log.d("DB data", _songs.toString())
     }
-}
-    /*private fun inputDummyAlbums() {
+
+    private fun inputDummyAlbums() {
         val songDB = SongDatabase.getInstance(this)!!
         val albums = songDB.albumDao().getAlbums()
 
-        //if (albums.isNotEmpty()) return
+        if (albums.isNotEmpty()) return
 
         songDB.albumDao().insert(
             Album(
@@ -205,5 +215,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
 }
-*/
+
+
+

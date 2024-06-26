@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".locker_savemusic_fragment">
 
-   <LinearLayout
+  <!-- <LinearLayout
        android:id="@+id/upper_linearlayout_tiv"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
            android:textSize="17dp"
            android:textStyle="bold"
            android:text="편집"/>
-   </LinearLayout>
+   </LinearLayout>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/savemusic_rv"

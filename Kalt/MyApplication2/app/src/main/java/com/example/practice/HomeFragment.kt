@@ -11,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.media3.database.DatabaseProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import androidx.viewpager2.widget.ViewPager2
 
 import com.example.practice.databinding.ActivityHomeFragmentBinding
@@ -19,7 +21,7 @@ import com.google.gson.Gson
 
 
 class HomeFragment : Fragment() {
-    private lateinit var homePannelAdapter: HomepannelVpAdapter
+    private var listener: OnButtonClickListener ? = null
     private val handler: Handler =  Handler()
     private var currentPage = 0
     private val DELAY_MS: Long = 3000  // 3초마다 페이지 변경
@@ -28,9 +30,9 @@ class HomeFragment : Fragment() {
     private var currentPlayingPosition: Int = -1
     private lateinit var mediaPlayer: MediaPlayer
     private var isPlaying = false
-    private lateinit var albumRVAdapter : AlbumRecyclerViewAdapter
     private lateinit var songDB: SongDatabase
     private var song: Song = Song()
+    private lateinit var db : SongDatabase
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,14 +41,9 @@ class HomeFragment : Fragment() {
         binding = ActivityHomeFragmentBinding.inflate(inflater,container,false)
 
 
-        albumdatas.apply {
-            add(Album("Butter","방탄소년단",R.drawable.img_album_exp ))
-            add(Album("헤어지자 말해요","박재정",R.drawable.ballad_image1))
-            add(Album("라일락","아이유",R.drawable.img_album_exp2))
-        }
-        /*songDB = SongDatabase.getInstance(requireContext())!!
+        songDB = SongDatabase.getInstance(requireContext())!!
         albumdatas.addAll(songDB.albumDao().getAlbums()) // songDB에서 album list를 가져옵니다.
-        Log.d("albumlist", albumdatas.toString())*/
+        Log.d("albumlist", albumdatas.toString())
 
         //서비스
         binding.serviceStartButton.setOnClickListener{
@@ -55,8 +52,9 @@ class HomeFragment : Fragment() {
         binding.serviceEndButton.setOnClickListener{
             serviceStop(it)
         }
-
-         albumRVAdapter = AlbumRecyclerViewAdapter(albumdatas, object : AlbumRecyclerViewAdapter.MyItemClickListener {
+        val albumRVAdapter = AlbumRecyclerViewAdapter(albumdatas)
+        binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
+        albumRVAdapter.setmyitemclickListener(object : AlbumRecyclerViewAdapter.MyItemClickListener {
             override fun onitemClick(album: Album) {
                 chagedeAlbimFragement(album)
             }
@@ -64,11 +62,8 @@ class HomeFragment : Fragment() {
             override fun onRemoveAlbum(position: Int) {
                 albumRVAdapter.removeItem(position)
             }
-            override fun onPlaySong(song: Song, position: Int) {
-                playSong(song, position)
-            }
-        },requireContext())
-        binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
+        })
+
 
         //banner
         val bannerAdapter = bannerVpAdapter(this)
@@ -99,16 +94,6 @@ class HomeFragment : Fragment() {
             })
             .commitAllowingStateLoss()
     }
-    private fun playSong(song: Song, position: Int) {
-        mediaPlayer?.release()
-
-        mediaPlayer = MediaPlayer.create(context, R.raw.lilac)
-        mediaPlayer?.start()
-        isPlaying = true
-
-
-        currentPlayingPosition = position
-    }
 
 
     private val update: Runnable = object : Runnable {
@@ -132,6 +117,7 @@ class HomeFragment : Fragment() {
         }
         viewpager2.adapter = homepanneladapter
         indicator.setViewPager(viewpager2)
+
     }
 
     override fun onResume() {
@@ -143,5 +129,6 @@ class HomeFragment : Fragment() {
         super.onPause()
         handler.removeCallbacks(update)
     }
+
 
 }

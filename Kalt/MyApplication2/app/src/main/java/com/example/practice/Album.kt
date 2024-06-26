@@ -5,10 +5,10 @@ import androidx.room.PrimaryKey
 import java.util.*
 
 
-data class Album (
-    var title:String?=null,
-    var singer : String?=null,
-    var coverimg:Int? =null,
-    var songs: ArrayList<Song> ? = null,
-    var muscic: ArrayList<Music> ? = null,
+@Entity(tableName = "AlbumTable")
+data class Album(
+    @PrimaryKey(autoGenerate = false) var id: Int = 0, // album의 pk는 임의로 지정해주기 위해 autogenerate 안씁니다.
+    var title: String? = "",
+    var singer: String? = "",
+    var coverimg: Int? = null
 )
